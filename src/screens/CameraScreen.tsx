@@ -5,12 +5,35 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import type { RootStackScreenProps } from "@/navigation/types";
+import { useUsageStore } from "@/state/usageStore";
 
 type Props = RootStackScreenProps<"Camera">;
 
 export default function CameraScreen() {
   const navigation = useNavigation<Props["navigation"]>();
   const insets = useSafeAreaInsets();
+  const canUseTransformation = useUsageStore((state) => state.canUseTransformation);
+  const isPremium = useUsageStore((state) => state.isPremium);
+
+  const checkUsageAndNavigate = (imageUri: string) => {
+    if (!canUseTransformation()) {
+      // Show paywall
+      Alert.alert(
+        "Upgrade to Premium",
+        "You've used your free transformation. Subscribe to Premium for unlimited room transformations!",
+        [
+          {
+            text: "Subscribe",
+            onPress: () => navigation.navigate("Subscription"),
+          },
+          { text: "Cancel", style: "cancel" },
+        ]
+      );
+      return;
+    }
+
+    navigation.navigate("Results", { imageUri });
+  };
 
   const handleTakePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -28,7 +51,7 @@ export default function CameraScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      navigation.navigate("Results", { imageUri: result.assets[0].uri });
+      checkUsageAndNavigate(result.assets[0].uri);
     }
   };
 
@@ -48,7 +71,7 @@ export default function CameraScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      navigation.navigate("Results", { imageUri: result.assets[0].uri });
+      checkUsageAndNavigate(result.assets[0].uri);
     }
   };
 

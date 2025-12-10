@@ -12,6 +12,7 @@ export type RootStackParamList = {
   Camera: undefined;
   Results: { imageUri: string };
   Subscription: undefined;
+  Login: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<

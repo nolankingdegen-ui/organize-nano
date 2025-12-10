@@ -4,6 +4,7 @@ import HomeScreen from "@/screens/HomeScreen";
 import CameraScreen from "@/screens/CameraScreen";
 import ResultsScreen from "@/screens/ResultsScreen";
 import SubscriptionScreen from "@/screens/SubscriptionScreen";
+import LoginScreen from "@/screens/LoginScreen";
 
 /**
  * RootStackNavigator
@@ -22,6 +23,7 @@ const RootNavigator = () => {
       <RootStack.Screen name="Camera" component={CameraScreen} />
       <RootStack.Screen name="Results" component={ResultsScreen} />
       <RootStack.Screen name="Subscription" component={SubscriptionScreen} />
+      <RootStack.Screen name="Login" component={LoginScreen} options={{ presentation: "modal" }} />
     </RootStack.Navigator>
   );
 };

@@ -10,14 +10,17 @@ import {
   getOfferings,
   purchasePackage,
   restorePurchases,
+  hasEntitlement,
 } from "@/lib/revenuecatClient";
 import type { PurchasesPackage } from "react-native-purchases";
+import { useUsageStore } from "@/state/usageStore";
 
 type Props = RootStackScreenProps<"Subscription">;
 
 export default function SubscriptionScreen() {
   const navigation = useNavigation<Props["navigation"]>();
   const insets = useSafeAreaInsets();
+  const setPremium = useUsageStore((state) => state.setPremium);
 
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
@@ -25,8 +28,16 @@ export default function SubscriptionScreen() {
 
   useEffect(() => {
     loadOfferings();
+    checkPremiumStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const checkPremiumStatus = async () => {
+    const result = await hasEntitlement("premium");
+    if (result.ok) {
+      setPremium(result.data);
+    }
+  };
 
   const loadOfferings = async () => {
     if (!isRevenueCatEnabled()) {
@@ -51,6 +62,9 @@ export default function SubscriptionScreen() {
     setPurchasing(false);
 
     if (result.ok) {
+      // Update premium status
+      setPremium(true);
+
       Alert.alert("Success!", "Welcome to RoomRevive Premium!", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);

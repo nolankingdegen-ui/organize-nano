@@ -9,7 +9,9 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 - **📝 Smart Instructions**: Get 5-7 actionable steps from an AI interior design expert
 - **📚 History**: View past transformations and revisit instructions
 - **✨ Beautiful UI**: Clean, modern design inspired by Pinterest and interior design apps
+- **🎁 Free Trial**: 1 free transformation to try the app
 - **👑 Premium Subscription**: Unlock unlimited transformations for $4.99/month
+- **🔐 Google Sign-In**: Save progress and sync across devices
 
 ## Tech Stack
 
@@ -19,20 +21,28 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 - **State**: Zustand with AsyncStorage persistence
 - **AI**: Nano Banana Pro (Gemini 3 Pro Image Preview) - Text & Image generation
 - **Payments**: RevenueCat for subscription management
+- **Auth**: Better Auth with Google OAuth
+- **Backend**: Bun + Hono + Prisma (SQLite) + Better Auth
 - **Icons**: Lucide React Native
 
 ## How It Works
 
-1. **Capture**: Take a photo or select from your gallery
-2. **Analyze**: Nano Banana Pro analyzes your room layout and organization
-3. **Transform**: AI generates a 2K quality image of your organized space
-4. **Guide**: Get 5-7 specific, actionable steps to achieve the transformation
+1. **Sign In** (Optional): Sign in with Google to save your transformations
+2. **Free Trial**: Get 1 free room transformation
+3. **Capture**: Take a photo or select from your gallery
+4. **Analyze**: Nano Banana Pro analyzes your room layout and organization
+5. **Transform**: AI generates a 2K quality image of your organized space (~30 seconds)
+6. **Guide**: Get 5-7 specific, actionable steps to achieve the transformation
+7. **Subscribe**: After free trial, subscribe for unlimited access
 
-## Subscription
+## Subscription & Monetization
 
-**Premium Monthly - $4.99/month**
+**Free Tier:**
+- 1 free room transformation
+- Full access to all features for first use
+- View transformation history
 
-Premium subscribers get:
+**Premium - $4.99/month:**
 - ✅ Unlimited room transformations
 - ✅ High-quality 2K AI-generated images
 - ✅ Priority AI processing
@@ -40,38 +50,71 @@ Premium subscribers get:
 - ✅ Export before/after images
 - ✅ Ad-free experience
 
+## Authentication
+
+**Google Sign-In:**
+- Secure OAuth authentication via Better Auth
+- Sync transformations across devices
+- Track usage per user
+- Optional (can use app without signing in)
+
 ## Setup
 
-No setup required! The app comes pre-configured with:
+### Prerequisites
+The app comes pre-configured with:
 - Nano Banana Pro API integration (ready to use)
 - RevenueCat payments (Test Store + App Store configured)
-- Premium entitlement: `premium`
-- Monthly package: `$rc_monthly`
+- Better Auth with Google OAuth support
 
-Just refresh and start organizing rooms!
+### Google OAuth Setup (Optional)
+To enable Google Sign-In, add these environment variables:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create OAuth 2.0 credentials
+3. Add to ENV tab in Vibecode:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
 
 ## App Structure
 
-- `src/screens/HomeScreen.tsx` - Main landing page with history and premium button
-- `src/screens/CameraScreen.tsx` - Photo capture/upload interface
-- `src/screens/ResultsScreen.tsx` - Before/after comparison with AI instructions
-- `src/screens/SubscriptionScreen.tsx` - Premium subscription paywall
-- `src/state/roomStore.ts` - Zustand store for room organization history
-- `src/navigation/RootNavigator.tsx` - Simple stack navigation
+### Frontend
+- `src/screens/HomeScreen.tsx` - Landing page with usage indicator and login button
+- `src/screens/CameraScreen.tsx` - Photo capture with usage check
+- `src/screens/ResultsScreen.tsx` - Before/after with AI instructions
+- `src/screens/SubscriptionScreen.tsx` - Premium paywall
+- `src/screens/LoginScreen.tsx` - Google Sign-In flow
+- `src/state/roomStore.ts` - Room organization history
+- `src/state/usageStore.ts` - Usage tracking and premium status
+- `src/navigation/RootNavigator.tsx` - App navigation
 - `src/lib/revenuecatClient.ts` - RevenueCat SDK wrapper
+- `src/lib/authClient.ts` - Better Auth client
+
+### Backend
+- `backend/src/auth.ts` - Better Auth config with Google OAuth
+- `backend/src/env.ts` - Environment validation
+- `backend/prisma/schema.prisma` - Database schema
 
 ## RevenueCat Configuration
 
 - **Project**: Organizer AI (`proj83c86f8e`)
 - **Entitlement**: Premium Access (`premium`)
 - **Apps**:
-  - Test Store (for testing in development)
+  - Test Store (for development testing)
   - App Store (bundle: `com.vibecode.roomremixai.3svrfs`)
 - **Product**: Premium Monthly ($4.99)
 - **Offering**: Premium Subscription (default)
 - **Package**: `$rc_monthly`
 
-Note: To publish to App Store, you'll need to manually configure the App Store Connect API credentials in RevenueCat.
+Note: To publish to App Store, manually configure App Store Connect API credentials in RevenueCat dashboard.
+
+## User Flow
+
+1. User opens app → sees HomeScreen with usage indicator
+2. Optional: Click login button → Sign in with Google
+3. Click "Organize a Room" → CameraScreen
+4. Select or take photo → Usage check:
+   - **First time**: Proceed to ResultsScreen → AI processes → Usage counter increments
+   - **After 1st use**: Show paywall alert → Navigate to SubscriptionScreen
+5. Subscribe → Premium status activated → Unlimited access
 
 ## Design System
 
@@ -87,7 +130,7 @@ Note: To publish to App Store, you'll need to manually configure the App Store C
 
 - Image analysis: ~5-10 seconds
 - Room transformation generation: ~30 seconds
-- Total: ~40 seconds per room
+- Total: ~40 seconds per transformation
 
 ---
 

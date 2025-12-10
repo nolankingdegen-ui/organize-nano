@@ -1,10 +1,12 @@
 import { View, Text, Pressable, ScrollView, Image } from "react-native";
-import { Camera, History, Sparkles, Crown } from "lucide-react-native";
+import { Camera, History, Sparkles, Crown, User } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RootStackScreenProps } from "@/navigation/types";
 import { useRoomStore } from "@/state/roomStore";
+import { useSession } from "@/lib/useSession";
+import { useUsageStore } from "@/state/usageStore";
 
 type Props = RootStackScreenProps<"Home">;
 
@@ -12,6 +14,9 @@ export default function HomeScreen() {
   const navigation = useNavigation<Props["navigation"]>();
   const insets = useSafeAreaInsets();
   const organizations = useRoomStore((state) => state.organizations);
+  const { data: session } = useSession();
+  const transformationsUsed = useUsageStore((state) => state.transformationsUsed);
+  const isPremium = useUsageStore((state) => state.isPremium);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FAF9F6" }}>
@@ -26,25 +31,69 @@ export default function HomeScreen() {
               <Sparkles size={32} color="#E07A5F" strokeWidth={2} />
               <Text className="text-3xl font-bold ml-3 text-[#2F3E46]">RoomRevive</Text>
             </View>
-            <Pressable
-              onPress={() => navigation.navigate("Subscription")}
-              className="active:scale-90"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: "#E07A5F",
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 20,
-              }}
-            >
-              <Crown size={18} color="#FFF" strokeWidth={2} fill="#FFF" />
-              <Text className="text-white font-semibold ml-1 text-sm">Premium</Text>
-            </Pressable>
+            <View className="flex-row items-center gap-2">
+              {!session && (
+                <Pressable
+                  onPress={() => navigation.navigate("Login")}
+                  className="active:scale-90"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: "#2F3E46/10",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <User size={20} color="#2F3E46" strokeWidth={2} />
+                </Pressable>
+              )}
+              <Pressable
+                onPress={() => navigation.navigate("Subscription")}
+                className="active:scale-90"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "#E07A5F",
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                }}
+              >
+                <Crown size={18} color="#FFF" strokeWidth={2} fill="#FFF" />
+                <Text className="text-white font-semibold ml-1 text-sm">Premium</Text>
+              </Pressable>
+            </View>
           </View>
           <Text className="text-base text-[#2F3E46]/60 leading-relaxed">
             Transform your space with AI-powered organization tips
           </Text>
+
+          {/* Usage Info */}
+          {!isPremium && (
+            <View className="mt-3 flex-row items-center">
+              <View
+                style={{
+                  backgroundColor: transformationsUsed >= 1 ? "#EF4444/10" : "#81B29A/10",
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 12,
+                }}
+              >
+                <Text
+                  style={{
+                    color: transformationsUsed >= 1 ? "#EF4444" : "#81B29A",
+                    fontSize: 12,
+                    fontWeight: "600",
+                  }}
+                >
+                  {transformationsUsed >= 1
+                    ? "Free trial used - Subscribe for unlimited"
+                    : "1 free transformation remaining"}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Main Action Card */}

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import * as FileSystem from "expo-file-system";
 import type { RootStackScreenProps } from "@/navigation/types";
 import { useRoomStore } from "@/state/roomStore";
+import { useUsageStore } from "@/state/usageStore";
 
 type Props = RootStackScreenProps<"Results">;
 
@@ -15,6 +16,7 @@ export default function ResultsScreen() {
   const route = useRoute<Props["route"]>();
   const insets = useSafeAreaInsets();
   const addOrganization = useRoomStore((state) => state.addOrganization);
+  const incrementUsage = useUsageStore((state) => state.incrementUsage);
 
   const [loading, setLoading] = useState(true);
   const [organizedImageUri, setOrganizedImageUri] = useState<string>("");
@@ -156,6 +158,9 @@ export default function ResultsScreen() {
         timestamp: Date.now(),
       };
       addOrganization(organization);
+
+      // Increment usage count after successful transformation
+      incrementUsage();
 
       setLoading(false);
     } catch (err) {
