@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, Image } from "react-native";
-import { Camera, History, Sparkles } from "lucide-react-native";
+import { Camera, History, Sparkles, Crown } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,9 +21,26 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View style={{ paddingTop: insets.top + 24, paddingHorizontal: 24 }}>
-          <View className="flex-row items-center mb-2">
-            <Sparkles size={32} color="#E07A5F" strokeWidth={2} />
-            <Text className="text-3xl font-bold ml-3 text-[#2F3E46]">RoomRevive</Text>
+          <View className="flex-row items-center justify-between mb-2">
+            <View className="flex-row items-center">
+              <Sparkles size={32} color="#E07A5F" strokeWidth={2} />
+              <Text className="text-3xl font-bold ml-3 text-[#2F3E46]">RoomRevive</Text>
+            </View>
+            <Pressable
+              onPress={() => navigation.navigate("Subscription")}
+              className="active:scale-90"
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "#E07A5F",
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 20,
+              }}
+            >
+              <Crown size={18} color="#FFF" strokeWidth={2} fill="#FFF" />
+              <Text className="text-white font-semibold ml-1 text-sm">Premium</Text>
+            </Pressable>
           </View>
           <Text className="text-base text-[#2F3E46]/60 leading-relaxed">
             Transform your space with AI-powered organization tips

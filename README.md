@@ -9,6 +9,7 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 - **📝 Smart Instructions**: Get 5-7 actionable steps from an AI interior design expert
 - **📚 History**: View past transformations and revisit instructions
 - **✨ Beautiful UI**: Clean, modern design inspired by Pinterest and interior design apps
+- **👑 Premium Subscription**: Unlock unlimited transformations for $4.99/month
 
 ## Tech Stack
 
@@ -17,6 +18,7 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 - **Styling**: NativeWind (Tailwind CSS)
 - **State**: Zustand with AsyncStorage persistence
 - **AI**: Nano Banana Pro (Gemini 3 Pro Image Preview) - Text & Image generation
+- **Payments**: RevenueCat for subscription management
 - **Icons**: Lucide React Native
 
 ## How It Works
@@ -26,17 +28,50 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 3. **Transform**: AI generates a 2K quality image of your organized space
 4. **Guide**: Get 5-7 specific, actionable steps to achieve the transformation
 
+## Subscription
+
+**Premium Monthly - $4.99/month**
+
+Premium subscribers get:
+- ✅ Unlimited room transformations
+- ✅ High-quality 2K AI-generated images
+- ✅ Priority AI processing
+- ✅ Save unlimited history
+- ✅ Export before/after images
+- ✅ Ad-free experience
+
 ## Setup
 
-No setup required! The app comes pre-configured with Nano Banana Pro API integration. Just refresh and start organizing rooms!
+No setup required! The app comes pre-configured with:
+- Nano Banana Pro API integration (ready to use)
+- RevenueCat payments (Test Store + App Store configured)
+- Premium entitlement: `premium`
+- Monthly package: `$rc_monthly`
+
+Just refresh and start organizing rooms!
 
 ## App Structure
 
-- `src/screens/HomeScreen.tsx` - Main landing page with history
+- `src/screens/HomeScreen.tsx` - Main landing page with history and premium button
 - `src/screens/CameraScreen.tsx` - Photo capture/upload interface
 - `src/screens/ResultsScreen.tsx` - Before/after comparison with AI instructions
+- `src/screens/SubscriptionScreen.tsx` - Premium subscription paywall
 - `src/state/roomStore.ts` - Zustand store for room organization history
 - `src/navigation/RootNavigator.tsx` - Simple stack navigation
+- `src/lib/revenuecatClient.ts` - RevenueCat SDK wrapper
+
+## RevenueCat Configuration
+
+- **Project**: Organizer AI (`proj83c86f8e`)
+- **Entitlement**: Premium Access (`premium`)
+- **Apps**:
+  - Test Store (for testing in development)
+  - App Store (bundle: `com.vibecode.roomremixai.3svrfs`)
+- **Product**: Premium Monthly ($4.99)
+- **Offering**: Premium Subscription (default)
+- **Package**: `$rc_monthly`
+
+Note: To publish to App Store, you'll need to manually configure the App Store Connect API credentials in RevenueCat.
 
 ## Design System
 
