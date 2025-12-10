@@ -8,6 +8,7 @@ import * as FileSystem from "expo-file-system";
 import type { RootStackScreenProps } from "@/navigation/types";
 import { useRoomStore } from "@/state/roomStore";
 import { useUsageStore } from "@/state/usageStore";
+import { getCategoryPrompt, getCategoryLabel } from "@/constants/categories";
 
 type Props = RootStackScreenProps<"Results">;
 
@@ -24,7 +25,7 @@ export default function ResultsScreen() {
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<string>("Analyzing your room...");
 
-  const { imageUri } = route.params;
+  const { imageUri, categoryId } = route.params;
 
   useEffect(() => {
     processImage();
@@ -51,6 +52,7 @@ export default function ResultsScreen() {
 
       // Step 1: Analyze the room and generate instructions using Nano Banana Pro
       setProgress("Analyzing room layout and organization...");
+      const categoryPrompt = getCategoryPrompt(categoryId as any);
       const instructionsResponse = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent",
         {
@@ -64,7 +66,7 @@ export default function ResultsScreen() {
               {
                 parts: [
                   {
-                    text: "You are a professional interior designer and organization expert. Analyze this room photo carefully and provide 5-7 specific, actionable steps to organize and make it more cozy. Be practical, specific, and considerate of the existing space. Format your response as a numbered list with clear, concise steps. Focus on realistic improvements like decluttering, furniture arrangement, lighting, decor, and creating functional zones.",
+                    text: `You are a professional interior designer and organization expert. Analyze this ${categoryPrompt} photo carefully and provide 5-7 specific, actionable steps to organize and improve it. Be practical, specific, and considerate of the existing space. Format your response as a numbered list with clear, concise steps. Focus on realistic improvements like decluttering, furniture arrangement, lighting, decor, and creating functional zones appropriate for this type of space.`,
                   },
                   {
                     inlineData: {
@@ -109,7 +111,7 @@ export default function ResultsScreen() {
               {
                 parts: [
                   {
-                    text: "Transform this room into a beautifully organized, cozy, and aesthetically pleasing space. Keep the same room layout, walls, windows, and overall architecture. Show it clean, well-organized with improved furniture arrangement, warm ambient lighting, indoor plants, tasteful decor, and create a welcoming atmosphere. Make it look realistic and achievable. Photorealistic style, high quality interior design.",
+                    text: `Transform this ${categoryPrompt} into a beautifully organized, functional, and aesthetically pleasing space. Keep the same layout, walls, windows, and overall architecture. Show it clean, well-organized with improved arrangement, warm ambient lighting, appropriate decor, and create a welcoming atmosphere suitable for this type of space. Make it look realistic and achievable. Photorealistic style, high quality interior design.`,
                   },
                   {
                     inlineData: {
@@ -156,6 +158,7 @@ export default function ResultsScreen() {
         organizedImageUri: generatedFileUri,
         instructions: parsedInstructions,
         timestamp: Date.now(),
+        categoryId: categoryId,
       };
       addOrganization(organization);
 

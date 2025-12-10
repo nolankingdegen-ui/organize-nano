@@ -9,8 +9,9 @@ declare global {
 
 export type RootStackParamList = {
   Home: undefined;
-  Camera: undefined;
-  Results: { imageUri: string };
+  CategorySelection: undefined;
+  Camera: { categoryId: string };
+  Results: { imageUri: string; categoryId: string };
   Subscription: undefined;
   Login: undefined;
 };

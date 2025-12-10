@@ -4,9 +4,10 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 
 ## Features
 
-- **📸 Photo Capture**: Take or upload photos of any room
-- **🤖 AI Vision**: Generate organized, cozy versions of your space using Nano Banana Pro (Gemini 3)
-- **📝 Smart Instructions**: Get 5-7 actionable steps from an AI interior design expert
+- **📸 Photo Capture**: Take or upload photos of any space
+- **🏠 21 Space Categories**: Organize rooms, offices, kitchens, gyms, studios, and more
+- **🤖 AI Vision**: Generate organized, functional versions using Nano Banana Pro (Gemini 3)
+- **📝 Smart Instructions**: Get 5-7 actionable steps tailored to your space type
 - **📚 History**: View past transformations and revisit instructions
 - **✨ Beautiful UI**: Clean, modern design inspired by Pinterest and interior design apps
 - **🎁 Free Trial**: 1 free transformation to try the app
@@ -28,22 +29,56 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 ## How It Works
 
 1. **Sign In** (Optional): Sign in with Google to save your transformations
-2. **Free Trial**: Get 1 free room transformation
-3. **Capture**: Take a photo or select from your gallery
-4. **Analyze**: Nano Banana Pro analyzes your room layout and organization
-5. **Transform**: AI generates a 2K quality image of your organized space (~30 seconds)
-6. **Guide**: Get 5-7 specific, actionable steps to achieve the transformation
-7. **Subscribe**: After free trial, subscribe for unlimited access
+2. **Free Trial**: Get 1 free transformation
+3. **Choose Category**: Select from 21 space types (room, office, kitchen, gym, studio, etc.)
+4. **Capture**: Take a photo or select from your gallery
+5. **Analyze**: Nano Banana Pro analyzes your space with category-specific context
+6. **Transform**: AI generates a 2K quality image of your organized space (~30 seconds)
+7. **Guide**: Get 5-7 specific, actionable steps tailored to your space type
+8. **Subscribe**: After free trial, subscribe for unlimited access
+
+## Space Categories
+
+The app supports 21 different space types, each with tailored AI analysis:
+
+**Residential:**
+- Room (bedroom/living room)
+- Kitchen
+- Home Gym
+- Garage / Workshop
+- Garden / Backyard
+- Studio Apartment
+- Home Theatre
+
+**Workspace:**
+- Office Workspace
+- Classroom / Study Area
+- Photography / YouTube Studio
+- Music Studio
+
+**Commercial:**
+- Event Hall / Banquet Hall
+- Hotel Room
+- Doctor's Clinic / Medical Room
+- Car Showroom
+- Exhibition / Booth Setup
+- Gym / Fitness Center
+- Airbnb Space
+
+**Specialized:**
+- VR Gaming Room
+- Camper Van / RV Interior
+- Pop-up Shop / Kiosk
 
 ## Subscription & Monetization
 
 **Free Tier:**
-- 1 free room transformation
+- 1 free transformation (any space type)
 - Full access to all features for first use
 - View transformation history
 
 **Premium - $4.99/month:**
-- ✅ Unlimited room transformations
+- ✅ Unlimited space transformations (all 21 categories)
 - ✅ High-quality 2K AI-generated images
 - ✅ Priority AI processing
 - ✅ Save unlimited history
@@ -78,10 +113,12 @@ To enable Google Sign-In, add these environment variables:
 
 ### Frontend
 - `src/screens/HomeScreen.tsx` - Landing page with usage indicator and login button
+- `src/screens/CategorySelectionScreen.tsx` - Choose from 21 space types
 - `src/screens/CameraScreen.tsx` - Photo capture with usage check
 - `src/screens/ResultsScreen.tsx` - Before/after with AI instructions
 - `src/screens/SubscriptionScreen.tsx` - Premium paywall
 - `src/screens/LoginScreen.tsx` - Google Sign-In flow
+- `src/constants/categories.ts` - Space category definitions and AI prompts
 - `src/state/roomStore.ts` - Room organization history
 - `src/state/usageStore.ts` - Usage tracking and premium status
 - `src/navigation/RootNavigator.tsx` - App navigation
@@ -110,11 +147,12 @@ Note: To publish to App Store, manually configure App Store Connect API credenti
 
 1. User opens app → sees HomeScreen with usage indicator
 2. Optional: Click login button → Sign in with Google
-3. Click "Organize a Room" → CameraScreen
-4. Select or take photo → Usage check:
-   - **First time**: Proceed to ResultsScreen → AI processes → Usage counter increments
+3. Click "Organize a Room" → CategorySelectionScreen with 21 space types
+4. Select category (e.g., "Kitchen", "Office", "Home Gym") → CameraScreen
+5. Select or take photo → Usage check:
+   - **First time**: Proceed to ResultsScreen → AI processes with category-specific prompts → Usage counter increments
    - **After 1st use**: Show paywall alert → Navigate to SubscriptionScreen
-5. Subscribe → Premium status activated → Unlimited access
+6. Subscribe → Premium status activated → Unlimited access to all categories
 
 ## Design System
 

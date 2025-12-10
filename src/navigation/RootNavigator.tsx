@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/navigation/types";
 import HomeScreen from "@/screens/HomeScreen";
+import CategorySelectionScreen from "@/screens/CategorySelectionScreen";
 import CameraScreen from "@/screens/CameraScreen";
 import ResultsScreen from "@/screens/ResultsScreen";
 import SubscriptionScreen from "@/screens/SubscriptionScreen";
@@ -20,6 +21,7 @@ const RootNavigator = () => {
       }}
     >
       <RootStack.Screen name="Home" component={HomeScreen} />
+      <RootStack.Screen name="CategorySelection" component={CategorySelectionScreen} />
       <RootStack.Screen name="Camera" component={CameraScreen} />
       <RootStack.Screen name="Results" component={ResultsScreen} />
       <RootStack.Screen name="Subscription" component={SubscriptionScreen} />

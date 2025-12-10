@@ -99,7 +99,7 @@ export default function HomeScreen() {
         {/* Main Action Card */}
         <View className="px-6 mt-8">
           <Pressable
-            onPress={() => navigation.navigate("Camera")}
+            onPress={() => navigation.navigate("CategorySelection")}
             className="active:scale-[0.98]"
             style={{ borderRadius: 24, overflow: "hidden", elevation: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12 }}
           >
@@ -132,7 +132,7 @@ export default function HomeScreen() {
               {organizations.slice(0, 5).map((org) => (
                 <Pressable
                   key={org.id}
-                  onPress={() => navigation.navigate("Results", { imageUri: org.originalImageUri })}
+                  onPress={() => navigation.navigate("Results", { imageUri: org.originalImageUri, categoryId: org.categoryId || "room" })}
                   className="active:scale-[0.98]"
                   style={{
                     backgroundColor: "#FFF",

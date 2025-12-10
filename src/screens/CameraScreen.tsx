@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { Camera, Image as ImageIcon, X } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import type { RootStackScreenProps } from "@/navigation/types";
@@ -11,9 +11,12 @@ type Props = RootStackScreenProps<"Camera">;
 
 export default function CameraScreen() {
   const navigation = useNavigation<Props["navigation"]>();
+  const route = useRoute<Props["route"]>();
   const insets = useSafeAreaInsets();
   const canUseTransformation = useUsageStore((state) => state.canUseTransformation);
   const isPremium = useUsageStore((state) => state.isPremium);
+
+  const { categoryId } = route.params;
 
   const checkUsageAndNavigate = (imageUri: string) => {
     if (!canUseTransformation()) {
@@ -32,7 +35,7 @@ export default function CameraScreen() {
       return;
     }
 
-    navigation.navigate("Results", { imageUri });
+    navigation.navigate("Results", { imageUri, categoryId });
   };
 
   const handleTakePhoto = async () => {

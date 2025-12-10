@@ -8,6 +8,7 @@ export interface RoomOrganization {
   organizedImageUri: string;
   instructions: string[];
   timestamp: number;
+  categoryId: string;
 }
 
 interface RoomStore {
