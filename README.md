@@ -5,8 +5,8 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 ## Features
 
 - **📸 Photo Capture**: Take or upload photos of any room
-- **🤖 AI Vision**: Generate organized, cozy versions of your space using DALL-E 3
-- **📝 Smart Instructions**: Get 5-7 actionable steps to organize your room using GPT-4
+- **🤖 AI Vision**: Generate organized, cozy versions of your space using Nano Banana Pro (Gemini 3)
+- **📝 Smart Instructions**: Get 5-7 actionable steps from an AI interior design expert
 - **📚 History**: View past transformations and revisit instructions
 - **✨ Beautiful UI**: Clean, modern design inspired by Pinterest and interior design apps
 
@@ -16,16 +16,19 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
 - **Navigation**: React Navigation 7 (Stack Navigator)
 - **Styling**: NativeWind (Tailwind CSS)
 - **State**: Zustand with AsyncStorage persistence
-- **AI**: OpenAI API (GPT-4o-mini for instructions, DALL-E 3 for images)
+- **AI**: Nano Banana Pro (Gemini 3 Pro Image Preview) - Text & Image generation
 - **Icons**: Lucide React Native
+
+## How It Works
+
+1. **Capture**: Take a photo or select from your gallery
+2. **Analyze**: Nano Banana Pro analyzes your room layout and organization
+3. **Transform**: AI generates a 2K quality image of your organized space
+4. **Guide**: Get 5-7 specific, actionable steps to achieve the transformation
 
 ## Setup
 
-1. Add your OpenAI API key in the **ENV tab** of the Vibecode app:
-   - Key name: `EXPO_PUBLIC_OPENAI_API_KEY`
-   - Get your key from: https://platform.openai.com/api-keys
-
-2. Refresh the app to start organizing rooms!
+No setup required! The app comes pre-configured with Nano Banana Pro API integration. Just refresh and start organizing rooms!
 
 ## App Structure
 
@@ -44,6 +47,12 @@ An AI-powered mobile app that helps you organize and beautify any room. Simply t
   - Text: Charcoal (#2F3E46)
 - **Style**: Clean, spacious, minimal with warm aesthetics
 - **Inspiration**: Pinterest, Houzz, Calm app
+
+## AI Processing Time
+
+- Image analysis: ~5-10 seconds
+- Room transformation generation: ~30 seconds
+- Total: ~40 seconds per room
 
 ---
 

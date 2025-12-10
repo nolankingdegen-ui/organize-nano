@@ -4,9 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
+import * as FileSystem from "expo-file-system";
 import type { RootStackScreenProps } from "@/navigation/types";
 import { useRoomStore } from "@/state/roomStore";
-import OpenAI from "openai";
 
 type Props = RootStackScreenProps<"Results">;
 
@@ -20,6 +20,7 @@ export default function ResultsScreen() {
   const [organizedImageUri, setOrganizedImageUri] = useState<string>("");
   const [instructions, setInstructions] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
+  const [progress, setProgress] = useState<string>("Analyzing your room...");
 
   const { imageUri } = route.params;
 
@@ -33,73 +34,135 @@ export default function ResultsScreen() {
       setLoading(true);
       setError("");
 
-      const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+      const apiKey = process.env.EXPO_PUBLIC_VIBECODE_GOOGLE_API_KEY;
       if (!apiKey) {
-        setError("Please add your OpenAI API key in the ENV tab to use this feature");
+        setError("Nano Banana Pro API is not configured. Please contact support.");
         setLoading(false);
         return;
       }
 
-      const openai = new OpenAI({ apiKey });
-
-      // Generate instructions using GPT-4
-      const instructionsResponse = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Analyze this room photo and provide 5-7 specific, actionable steps to organize and make it more cozy. Be practical and specific. Format as a simple list.",
-              },
-              {
-                type: "image_url",
-                image_url: { url: imageUri },
-              },
-            ],
-          },
-        ],
-        max_tokens: 500,
+      // Read image as base64
+      setProgress("Reading your photo...");
+      const imageBase64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
       });
 
-      const instructionsText = instructionsResponse.choices[0]?.message?.content || "";
+      // Step 1: Analyze the room and generate instructions using Nano Banana Pro
+      setProgress("Analyzing room layout and organization...");
+      const instructionsResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "x-goog-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: "You are a professional interior designer and organization expert. Analyze this room photo carefully and provide 5-7 specific, actionable steps to organize and make it more cozy. Be practical, specific, and considerate of the existing space. Format your response as a numbered list with clear, concise steps. Focus on realistic improvements like decluttering, furniture arrangement, lighting, decor, and creating functional zones.",
+                  },
+                  {
+                    inlineData: {
+                      mimeType: "image/jpeg",
+                      data: imageBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseModalities: ["Text"],
+            },
+          }),
+        }
+      );
+
+      const instructionsData = await instructionsResponse.json();
+      const instructionsText =
+        instructionsData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
       const parsedInstructions = instructionsText
         .split("\n")
-        .filter((line) => line.trim().length > 0)
-        .map((line) => line.replace(/^\d+\.\s*/, "").replace(/^-\s*/, "").trim())
-        .filter((line) => line.length > 10);
+        .filter((line: string) => line.trim().length > 0)
+        .map((line: string) => line.replace(/^\d+\.\s*/, "").replace(/^-\s*/, "").trim())
+        .filter((line: string) => line.length > 15);
 
       setInstructions(parsedInstructions);
 
-      // Generate organized room image using DALL-E
-      const imageResponse = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: `Transform this room into an organized, cozy, and aesthetically pleasing space. Keep the same room layout and architecture, but show it clean, organized, with better furniture arrangement, soft lighting, plants, and warm decor. Photorealistic style.`,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
+      // Step 2: Generate the organized room image
+      setProgress("Generating your organized room vision... (this takes ~30 seconds)");
+      const imageResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "x-goog-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: "Transform this room into a beautifully organized, cozy, and aesthetically pleasing space. Keep the same room layout, walls, windows, and overall architecture. Show it clean, well-organized with improved furniture arrangement, warm ambient lighting, indoor plants, tasteful decor, and create a welcoming atmosphere. Make it look realistic and achievable. Photorealistic style, high quality interior design.",
+                  },
+                  {
+                    inlineData: {
+                      mimeType: "image/jpeg",
+                      data: imageBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseModalities: ["Image"],
+              imageConfig: {
+                aspectRatio: "1:1",
+                imageSize: "2K",
+              },
+            },
+          }),
+        }
+      );
+
+      const imageData = await imageResponse.json();
+      const imagePart = imageData.candidates?.[0]?.content?.parts?.find(
+        (p: { inlineData?: { data: string } }) => p.inlineData
+      );
+
+      if (!imagePart) {
+        throw new Error("No image generated by Nano Banana Pro");
+      }
+
+      // Save generated image locally
+      const base64Image = imagePart.inlineData.data;
+      const generatedFileUri = FileSystem.documentDirectory + `organized_${Date.now()}.png`;
+      await FileSystem.writeAsStringAsync(generatedFileUri, base64Image, {
+        encoding: FileSystem.EncodingType.Base64,
       });
 
-      const generatedImageUrl = imageResponse.data?.[0]?.url;
-      if (generatedImageUrl) {
-        setOrganizedImageUri(generatedImageUrl);
+      setOrganizedImageUri(generatedFileUri);
 
-        // Save to history
-        const organization = {
-          id: Date.now().toString(),
-          originalImageUri: imageUri,
-          organizedImageUri: generatedImageUrl,
-          instructions: parsedInstructions,
-          timestamp: Date.now(),
-        };
-        addOrganization(organization);
-      }
+      // Save to history
+      const organization = {
+        id: Date.now().toString(),
+        originalImageUri: imageUri,
+        organizedImageUri: generatedFileUri,
+        instructions: parsedInstructions,
+        timestamp: Date.now(),
+      };
+      addOrganization(organization);
 
       setLoading(false);
     } catch (err) {
       console.error("Error processing image:", err);
-      setError("Failed to process the image. Please check your API key and try again.");
+      setError(
+        "Failed to process the image. The AI service may be temporarily unavailable. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -177,10 +240,8 @@ export default function ResultsScreen() {
           >
             <ActivityIndicator size="large" color="#FFF" />
           </LinearGradient>
-          <Text className="text-xl font-bold text-[#2F3E46] mb-2">Creating magic...</Text>
-          <Text className="text-center text-[#2F3E46]/60 leading-relaxed">
-            AI is analyzing your room and generating organization tips
-          </Text>
+          <Text className="text-xl font-bold text-[#2F3E46] mb-2">Nano Banana at work...</Text>
+          <Text className="text-center text-[#2F3E46]/60 leading-relaxed px-4">{progress}</Text>
         </View>
       </View>
     );
